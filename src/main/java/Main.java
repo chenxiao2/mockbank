@@ -1,3 +1,5 @@
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.security.Provider;
 import java.security.Security;
 import java.util.Set;
@@ -10,6 +12,7 @@ import static java.lang.String.join;
 public class Main {
 
     public static void main(String[] args) {
+        addBouncyCastle();
         listProviders();
 
     }
@@ -28,5 +31,11 @@ public class Main {
         for(Provider.Service service : services) {
             System.out.println(join(":::", service.getAlgorithm(), service.getType()));
         }
+    }
+
+    private static void addBouncyCastle() {
+        Provider bcprov = new BouncyCastleProvider();
+        int precedenceOrder = Security.addProvider(bcprov);
+        System.out.println("added  " + bcprov.getName() + " " + bcprov.getVersion() + " as precedence " + precedenceOrder);
     }
 }
