@@ -1,3 +1,4 @@
+import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
@@ -80,12 +81,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            System.out.println(bout.toString());
-            System.out.println(bout.toString(UTF_8.name()));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        System.out.println(Hex.encodeHexString(bout.toByteArray()));
         // bOut now contains the cipher text
     }
 }
