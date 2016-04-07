@@ -1,3 +1,4 @@
+import com.google.common.primitives.Bytes;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -114,26 +115,31 @@ public class Main {
         System.out.println("Algorithm: " + secretKey.getAlgorithm() + " Format: " + secretKey.getFormat()
         + " Encoding length: " + secretKey.getEncoded().length);
 
-        rsa.init(Cipher.ENCRYPT_MODE,pubKey);
-        byte[] cipherKeyBytes = rsa.doFinal(secretKey.getEncoded());
         Base64.Encoder encoder = Base64.getEncoder();
-        String cipherKeyString = encoder.encodeToString(cipherKeyBytes);
-        System.out.println("Length of cipher key: " + cipherKeyString.length());
-        System.out.println(cipherKeyString);
+        Base64.Decoder decoder = Base64.getDecoder();
 
         aes.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] iv = aes.getIV();
         byte[] cipherDataBytes = aes.doFinal(plaintext.getBytes());
         String cipherDataString = encoder.encodeToString(cipherDataBytes);
         System.out.println("Length of cipher data: " + cipherDataString.length());
         System.out.println(cipherDataString);
 
+        rsa.init(Cipher.ENCRYPT_MODE,pubKey);
+        byte[] iv = aes.getIV();
+        System.out.println("IV length: " + iv.length);
+        byte[] cipherKeyBytes = rsa.doFinal(secretKey.getEncoded());
+        byte[] ivAndCipherKeyBytes = Bytes.concat(iv, cipherKeyBytes);
+        String ivAndCipherKeyString = encoder.encodeToString(ivAndCipherKeyBytes);
+        System.out.println("Length of cipher key: " + ivAndCipherKeyString.length());
+        System.out.println(ivAndCipherKeyString);
+
+        byte[] ivAndCipherKeyBytes2 = decoder.decode(ivAndCipherKeyString);
         rsa.init(Cipher.DECRYPT_MODE,privKey);
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] plainKeyBytes = rsa.doFinal(decoder.decode(cipherKeyString));
+        byte[] plainKeyBytes = rsa.doFinal(ivAndCipherKeyBytes2, 16, ivAndCipherKeyBytes2.length-16);
+
         SecretKeySpec secretKeySpec = new SecretKeySpec(plainKeyBytes, "AES");
 
-        aes.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
+        aes.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivAndCipherKeyBytes2,0, 16));
         byte[] plainDataBytes = aes.doFinal(decoder.decode(cipherDataString));
         String plainDataString = new String(plainDataBytes);
         System.out.println(plainDataString.length());
