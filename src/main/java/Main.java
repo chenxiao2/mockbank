@@ -1,10 +1,9 @@
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.*;
 import java.util.Base64;
@@ -12,7 +11,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.lang.String.join;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Main {
 
@@ -21,7 +19,9 @@ public class Main {
         //listProviders();
         //encryptWithBC("plaintext");
         //printUUIDtoString();
-        String xmlString = readXMLtoString("/Users/liazhang/code/jca/src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
+        String xmlString = readXMLtoString("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
+        System.out.println("Length of xml string: " + xmlString.length());
+        System.out.println(messageDigest(xmlString));
         encryptWithRSAOAEP(xmlString);
         //System.out.println();
     }
@@ -90,11 +90,16 @@ public class Main {
 
     private static void encryptWithRSAOAEP(String plaintext) throws Exception {
         ////OAEPWithSHA256AndMGF1Padding
-        //Cipher rsaoaep = Cipher.getInstance("RSA/NONE/OAEPWithSHA256AndMGF1Padding");
-        //Cipher rsaoaep = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-        Cipher rsaoaep = Cipher.getInstance("RSA");
-        System.out.println("Cipher algorithm: " + rsaoaep.getAlgorithm());
-        System.out.println("Cipher provide name: " + rsaoaep.getProvider().getName() + " " + rsaoaep.getProvider().getVersion());
+        final String keyTransformation = "RSA/NONE/OAEPWithSHA256AndMGF1Padding";
+        //Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        Cipher rsa = Cipher.getInstance(keyTransformation);
+        System.out.println("Key Cipher algorithm: " + rsa.getAlgorithm());
+        System.out.println("Key Cipher provide name: " + rsa.getProvider().getName() + " " + rsa.getProvider().getVersion());
+
+        final String dataTransformation = "AES/CBC/PKCS5Padding";
+        Cipher aes = Cipher.getInstance(dataTransformation);
+        System.out.println("Data Cipher algorithm: " + aes.getAlgorithm());
+        System.out.println("Data Cipher provide name: " + aes.getProvider().getName() + " " + aes.getProvider().getVersion());
 
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(2048, new SecureRandom());
@@ -103,20 +108,47 @@ public class Main {
         PublicKey pubKey = pair.getPublic();
         PrivateKey privKey = pair.getPrivate();
 
-        rsaoaep.init(Cipher.ENCRYPT_MODE,pubKey);
-        byte[] cipherText = rsaoaep.doFinal(plaintext.getBytes());
-        Base64.Encoder encoder = Base64.getEncoder();
-        String cipherTextString = encoder.encodeToString(cipherText);
-        System.out.println(cipherTextString);
+        KeyGenerator secretGenerator = KeyGenerator.getInstance("AES");
+        secretGenerator.init(128);
+        SecretKey secretKey = secretGenerator.generateKey();
+        System.out.println("Algorithm: " + secretKey.getAlgorithm() + " Format: " + secretKey.getFormat()
+        + " Encoding length: " + secretKey.getEncoded().length);
 
-        rsaoaep.init(Cipher.DECRYPT_MODE,privKey);
+        rsa.init(Cipher.ENCRYPT_MODE,pubKey);
+        byte[] cipherKeyBytes = rsa.doFinal(secretKey.getEncoded());
+        Base64.Encoder encoder = Base64.getEncoder();
+        String cipherKeyString = encoder.encodeToString(cipherKeyBytes);
+        System.out.println("Length of cipher key: " + cipherKeyString.length());
+        System.out.println(cipherKeyString);
+
+        aes.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] iv = aes.getIV();
+        byte[] cipherDataBytes = aes.doFinal(plaintext.getBytes());
+        String cipherDataString = encoder.encodeToString(cipherDataBytes);
+        System.out.println("Length of cipher data: " + cipherDataString.length());
+        System.out.println(cipherDataString);
+
+        rsa.init(Cipher.DECRYPT_MODE,privKey);
         Base64.Decoder decoder = Base64.getDecoder();
-        byte[] plaintext2Bytes = rsaoaep.doFinal(decoder.decode(cipherTextString));
-        String plaintext2String = new String(plaintext2Bytes);
-        System.out.println(plaintext2String);
+        byte[] plainKeyBytes = rsa.doFinal(decoder.decode(cipherKeyString));
+        SecretKeySpec secretKeySpec = new SecretKeySpec(plainKeyBytes, "AES");
+
+        aes.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
+        byte[] plainDataBytes = aes.doFinal(decoder.decode(cipherDataString));
+        String plainDataString = new String(plainDataBytes);
+        System.out.println(plainDataString.length());
+        System.out.println(messageDigest(plainDataString));
+        System.out.println(plainDataString);
 
     }
 
+    private static String messageDigest(String input) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        byte[] output = md.digest(input.getBytes());
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(output);
+
+    }
     private static void printUUIDtoString() {
         System.out.println(UUID.randomUUID().toString());
     }

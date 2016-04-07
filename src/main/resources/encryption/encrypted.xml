@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EncryptedData xmlns="http://www.w3.org/2001/04/xmlenc#" 
+               xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+               MimeType='application/xml'>
+  <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc" />
+  <ds:KeyInfo>
+    <EncryptedKey>
+      <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" />
+      <CipherData>
+        <CipherValue>Base64EncodedSymmetricKeyEncryptedByRSAOAEP</CipherValue>
+      </CipherData>
+    </EncryptedKey>
+  </ds:KeyInfo>
+  <CipherData>
+    <CipherValue>Base64EncodedTheXMLDocumentEncryptedByAES</CipherValue>
+  </CipherData>
+</EncryptedData>
