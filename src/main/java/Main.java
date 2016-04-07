@@ -5,11 +5,9 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.security.*;
+import java.util.Base64;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,11 +16,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Main {
 
-    public static void main(String[] args) {
-        //addBouncyCastle();
+    public static void main(String[] args) throws Exception {
+        addBouncyCastle();
         //listProviders();
         //encryptWithBC("plaintext");
         //printUUIDtoString();
+        String xmlString = readXMLtoString("/Users/liazhang/code/jca/src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
+        encryptWithRSAOAEP(xmlString);
+        //System.out.println();
     }
 
     private static void listProviders() {
@@ -87,7 +88,50 @@ public class Main {
         // bOut now contains the cipher text
     }
 
+    private static void encryptWithRSAOAEP(String plaintext) throws Exception {
+        ////OAEPWithSHA256AndMGF1Padding
+        //Cipher rsaoaep = Cipher.getInstance("RSA/NONE/OAEPWithSHA256AndMGF1Padding");
+        //Cipher rsaoaep = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        Cipher rsaoaep = Cipher.getInstance("RSA");
+        System.out.println("Cipher algorithm: " + rsaoaep.getAlgorithm());
+        System.out.println("Cipher provide name: " + rsaoaep.getProvider().getName() + " " + rsaoaep.getProvider().getVersion());
+
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048, new SecureRandom());
+
+        KeyPair pair = generator.generateKeyPair();
+        PublicKey pubKey = pair.getPublic();
+        PrivateKey privKey = pair.getPrivate();
+
+        rsaoaep.init(Cipher.ENCRYPT_MODE,pubKey);
+        byte[] cipherText = rsaoaep.doFinal(plaintext.getBytes());
+        Base64.Encoder encoder = Base64.getEncoder();
+        String cipherTextString = encoder.encodeToString(cipherText);
+        System.out.println(cipherTextString);
+
+        rsaoaep.init(Cipher.DECRYPT_MODE,privKey);
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] plaintext2Bytes = rsaoaep.doFinal(decoder.decode(cipherTextString));
+        String plaintext2String = new String(plaintext2Bytes);
+        System.out.println(plaintext2String);
+
+    }
+
     private static void printUUIDtoString() {
         System.out.println(UUID.randomUUID().toString());
+    }
+
+    private static String readXMLtoString(String path) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(path))){
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = br.readLine();
+            }
+
+        }
+
+        return sb.toString();
     }
 }

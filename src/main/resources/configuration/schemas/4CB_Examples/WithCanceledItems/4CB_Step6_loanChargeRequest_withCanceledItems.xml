@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loanChargeRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../../gil_fr.xsd">
+  <timestamp>2015-07-04T01:31:11.234</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID6</transactionId>
+  <requestId>NYF98KP219G</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <externalLoanId>0123456789</externalLoanId>
+  <loanDetails>
+    <amount>820.00</amount>
+    <financingCosts>-18.45</financingCosts>
+    <currency>EUR</currency>
+  </loanDetails>
+  <remittanceFileEntries>
+    <remittanceFileEntry>
+      <amount>820.00</amount>
+      <matchKey>loanChargeID_E2_001</matchKey>
+      <processingDivisionId>GILFR0001</processingDivisionId>
+    </remittanceFileEntry>
+    <remittanceFileEntry>
+      <amount>-18.45</amount>
+      <matchKey>F_loanChargeID_E2_001</matchKey>
+      <processingDivisionId>GILFR0001</processingDivisionId>
+    </remittanceFileEntry>
+  </remittanceFileEntries>
+</loanChargeRequest>

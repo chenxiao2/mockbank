@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loanAdjustmentResponse version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../../gil_fr.xsd">
+  <timestamp>2015-07-04T01:30:11.234</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID4</transactionId>
+  <requestId>RGL91U7I810</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <responseResult>ACCEPTED</responseResult>
+  <responseResultCode>0</responseResultCode>
+  <responseResultDescription>All Ok.</responseResultDescription>
+</loanAdjustmentResponse>

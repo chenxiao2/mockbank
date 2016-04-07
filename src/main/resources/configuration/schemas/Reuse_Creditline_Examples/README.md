@@ -1,0 +1,1 @@
+When the customer use the remaining balance of a credit line, the customer does not need to apply an loan again. Therefore the first interface will start with LoanConfirmation call.

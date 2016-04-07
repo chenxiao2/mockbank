@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<loanConfirmationRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../gil_fr.xsd">
+  <timestamp>2015-07-03T00:30:22.345</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID3</transactionId>
+  <requestId>DQR1224XS87</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <externalLoanId>0123456789</externalLoanId>
+</loanConfirmationRequest>

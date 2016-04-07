@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loanAdjustmentRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../../gil_fr.xsd">
+  <timestamp>2015-07-04T01:30:11.234</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID4</transactionId>
+  <requestId>TH88Z09AR1L</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <externalLoanId>0123456789</externalLoanId>
+  <adjustmentType>PURCHASE_CLOSE</adjustmentType>
+  <loanDetails>
+    <amount>-100.0</amount>
+    <financingCosts>2.25</financingCosts>
+    <currency>EUR</currency>
+  </loanDetails>
+  <itemList>
+    <amount>-100.00</amount>
+    <currency>EUR</currency>
+  </itemList>
+</loanAdjustmentRequest>

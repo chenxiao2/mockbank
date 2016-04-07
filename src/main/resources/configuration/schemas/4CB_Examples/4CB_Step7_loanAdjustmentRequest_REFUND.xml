@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loanAdjustmentRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../gil_fr.xsd">
+  <timestamp>2015-07-10T00:30:11.234</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID7</transactionId>
+  <requestId>YT183OPY72Q</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <externalLoanId>0123456789</externalLoanId>
+  <adjustmentType>REFUND</adjustmentType>
+  <loanDetails>
+    <amount>-100.00</amount>
+    <financingCosts>2.25</financingCosts>
+    <currency>EUR</currency>
+  </loanDetails>
+  <itemList>
+    <items>
+      <item>
+        <itemId>ASIN_D</itemId>
+        <quantity>1</quantity>
+      </item>
+    </items>
+    <amount>-100.00</amount>
+    <currency>EUR</currency>
+  </itemList>
+  <remittanceFileEntries>
+    <remittanceFileEntry>
+      <amount>-100.00</amount>
+      <matchKey>SEALSID_E1_002</matchKey>
+      <processingDivisionId>GILFR0001</processingDivisionId>
+    </remittanceFileEntry>
+    <remittanceFileEntry>
+      <amount>2.25</amount>
+      <matchKey>F_SEALSID_E1_002</matchKey>
+      <processingDivisionId>GILFR0001</processingDivisionId>
+    </remittanceFileEntry>
+  </remittanceFileEntries>
+</loanAdjustmentRequest>

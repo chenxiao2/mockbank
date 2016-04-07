@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loanApplicationCreationRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../gil_fr.xsd">
+  <timestamp>2015-07-01T00:30:11.234</timestamp>
+  <systemId>85.183.32.69</systemId>
+  <transactionId>Base64UUID1</transactionId>
+  <requestId>XY24ZAR5183</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <loanApplicationId>amzn1.iws1.gil.A86hp8t8SQK3QjpqqwE1YQ</loanApplicationId>
+  <loanDetails>
+    <amount>920.00</amount>
+    <financingCosts>-20.70</financingCosts>
+    <currency>EUR</currency>
+    <installmentDetails>
+      <numberOfInstallments>4</numberOfInstallments>
+      <installmentAmount>230.0</installmentAmount>
+      <firstInstallmentAmount>230.0</firstInstallmentAmount>
+      <fees>0.00</fees>
+      <aprEffective>0.00</aprEffective>
+    </installmentDetails>
+    <loanMethod>INSTALLMENT_CC</loanMethod>
+  </loanDetails>
+  <itemList>
+    <items>
+      <item>
+        <itemId>ASIN_A</itemId>
+        <itemName>Sample item A</itemName>
+        <quantity>1</quantity>
+        <totalPrice>80.00</totalPrice>
+        <unitPrice>66.67</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>13.33</tax>
+      </item>
+      <item>
+        <itemId>ASIN_B</itemId>
+        <itemName>Sample item B</itemName>
+        <quantity>1</quantity>
+        <totalPrice>40.00</totalPrice>
+        <unitPrice>33.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>6.67</tax>
+      </item>
+      <item>
+        <itemId>ASIN_C</itemId>
+        <itemName>Sample item C</itemName>
+        <quantity>1</quantity>
+        <totalPrice>700.00</totalPrice>
+        <unitPrice>583.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>116.67</tax>
+      </item>
+      <item>
+        <itemId>ASIN_D</itemId>
+        <itemName>Sample item D</itemName>
+        <quantity>1</quantity>
+        <totalPrice>100.00</totalPrice>
+        <unitPrice>83.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>16.67</tax>
+      </item>
+    </items>
+    <amount>920.00</amount>
+    <currency>EUR</currency>
+  </itemList>
+  <customer>
+    <givenName>John</givenName>
+    <familyName>Doe</familyName>
+    <contactInfo>
+      <email>johndoe@gmail.com</email>
+      <!--<homePhone>0605040302</homePhone>-->
+    </contactInfo>
+    <addresses>
+      <address>
+        <addressType>SHIPPING</addressType>
+        <destinationType>PICKUP</destinationType>
+        <street>4 Rue de Saintonge</street>
+        <city>Paris</city>
+        <postalCode>75003</postalCode>
+        <countryCode>FR</countryCode>
+        <phone>0605040302</phone> <!--new added field, note each address could have a different phone number -->
+      </address>
+      <address>
+        <addressType>BILLING</addressType>
+        <street>4 Rue de Saintonge</street>
+        <city>Paris</city>
+        <postalCode>75003</postalCode>
+        <countryCode>FR</countryCode>
+        <phone>0605040301</phone> <!--new added field, note each address could have a different phone number -->
+      </address>
+    </addresses>
+  </customer>
+</loanApplicationCreationRequest>

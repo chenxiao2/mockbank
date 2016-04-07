@@ -1,0 +1,1265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:amz="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+    elementFormDefault="qualified"
+    targetNamespace="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+    version="GIL-FR-1.0.5">
+  <xs:complexType name="message" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The base type for Amazon GIL request and response messages.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="timestamp" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation> Timestamp of the message processing. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="systemId" type="amz:SystemIdType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The systemId element contains the host name or IP address of
+            the calling system.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transactionId" type="amz:Base64UUIDType">
+        <xs:annotation>
+          <xs:documentation>
+            This element contains a transaction ID. The transactionId is
+            unique in a global manner. The transactionId is created by calling party
+            (either Amazon or lender) in the request and will identify any transaction.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="requestId" type="amz:Base64UUIDType">
+        <xs:annotation>
+          <xs:documentation>
+            This element contains a request ID. The requestID is
+            unique in a global manner. The requestID is created by calling party
+            (either Amazon or lender) in the request and will identify a request.
+            Multiple requests should have different requestId and could have the same transactionid.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="merchantId" type="amz:MerchantIdType">
+        <xs:annotation>
+          <xs:documentation>
+            If all the items of this loan are sold by Amazon, its value is Amazon;
+            if all the items are sold by third party sellers, its value is 3P;
+            if some items are sold by Amazon and others are sold by 3P, then its value is Commingled
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="marketplaceId" type="amz:MarketplaceIdType">
+        <xs:annotation>
+          <xs:documentation>
+            For GIL FR, its value is FR. We may use different value for GIL in Italy and Spain
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="version" use="required" type="amz:VersionType">
+      <xs:annotation>
+        <xs:documentation>
+          The version attribute contains the Amazon GIL interface version.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- BASE REQUEST -->
+
+
+  <xs:complexType name="request" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The request base type contains the data fields common to an Amazon
+        GIL request.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="amz:message"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <!-- BASE RESPONSE -->
+
+
+  <xs:complexType name="response" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The response base type contains the data fields common to an Amazon
+        GIL response.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="amz:message">
+        <xs:group ref="amz:responseFields"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <!-- REQUESTS -->
+
+
+  <xs:element name="loanApplicationCreationRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:sequence>
+            <xs:element name="loanApplicationId" type="amz:LoanApplicationIdType"/>
+            <xs:group ref="amz:purchaseGroup"/>
+            <xs:element ref="amz:customer" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="loanConfirmationRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:choice>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType"/>
+            <xs:sequence>
+              <xs:element ref="amz:externalCreditLineId"/>
+              <xs:group ref="amz:purchaseGroup"/>
+            </xs:sequence>
+          </xs:choice>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="loanChargeRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:sequence>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType"/>
+            <xs:element ref="amz:loanDetails"/>
+            <xs:element ref="amz:remittanceFileEntries"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="loanAdjustmentRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:sequence>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType"/>
+            <xs:element name="adjustmentType" type="amz:adjustmentType" />
+            <xs:element ref="amz:loanDetails">
+              <xs:annotation>
+                <xs:documentation>
+                  Only amount, financingCosts, and currency are needed to set.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element ref="amz:itemList" />
+            <xs:element ref="amz:remittanceFileEntries" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>
+                  If the adjustmentType is
+                  PURCHASE_CLOSE, then there will be no
+                  remittanceFileEntries since there is no money
+                  movement.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="healthCheckRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="loanStatusNotificationRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:sequence>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType"/>
+            <xs:element name="loanApplicationId" type="amz:LoanApplicationIdType"/>
+            <xs:group ref="amz:responseFields"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="creditLineNotificationRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:request">
+          <xs:sequence>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType"/>
+            <xs:element name="loanApplicationId" type="amz:LoanApplicationIdType"/>
+            <xs:element ref="amz:creditLineDetails"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <!-- RESPONSES -->
+
+
+  <xs:element name="loanApplicationCreationResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="loanConfirmationResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response">
+          <xs:sequence>
+            <xs:element name="externalLoanId" type="amz:ExternalLoanIdType" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>
+                  ExternalLoanId in the LoanConfirmationResponse is only required for reusing the credit line.
+                  
+                  4CB and standalone installments does not require the externalLoanId in LoanConfirmationResponse, 
+                  and if set, it must be the same as the one passed in the LoanConfirmationRequest.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="loanChargeResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="loanAdjustmentResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="healthCheckResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="loanStatusNotificationResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="creditLineNotificationResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:response"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <!-- NON-ROOT ELEMENTS -->
+
+  <xs:group name="purchaseGroup">
+    <xs:sequence>
+      <xs:element ref="amz:loanDetails"/>
+      <xs:element ref="amz:itemList"/>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:simpleType name="MerchantIdType">
+    <xs:annotation>
+      <xs:documentation>
+        A type for merchantId
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-zA-Z.]{1,9}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MarketplaceIdType">
+    <xs:annotation>
+      <xs:documentation>
+        A type for marketplaceId
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z]{1,2}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:group name="responseFields">
+    <xs:sequence>
+      <xs:element name="responseResult" type="amz:ResponseResultType">
+        <xs:annotation>
+          <xs:documentation>
+            String enumeration indicating coarse-grain response result
+            ACCEPTED, REJECTED, PENDING or PROCESSING_ERROR.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="responseResultCode" type="amz:ResponseResultCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional numeric code indicating fine-grain result.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="responseResultDescription" type="amz:ResponseResultDescriptionType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional free-form, human-readable string explaining the result. Amazon expects the description is in English.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+
+
+
+  <xs:simpleType name="SystemIdType">
+    <xs:annotation>
+      <xs:documentation>
+        It should accept a hostname, an IPv4 or IPv6 address.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-zA-Z.:-]{1,128}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Base64UUIDType">
+    <xs:annotation>
+      <xs:documentation>
+        Should be able to hold a URL safe Base 64 UUID.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-zA-Z_-]{1,22}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VersionType">
+    <xs:annotation>
+      <xs:documentation>
+        represent a version of a message.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{1,5}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ExternalLoanIdType">
+    <xs:annotation>
+      <xs:documentation>
+        Contains an ID generated by the lender. The externalLoanId is created
+        for the first loanApplicationCreation call and must be provided for all subsequent requests
+        for an Amazon transaction. An externalLoanId may be unique relative to one merchant
+        profile only. Also an externalLoanId is unique to a payment transaction. Every
+        response contains the externalLoanId with the following exception: health Check.
+        Omitted for initial applications, required for subsequent applications calls related
+        to this loan.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{1,30}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="LoanApplicationIdType">
+    <xs:annotation>
+      <xs:documentation>
+        Loan application ID generated by Amazon. Every loanApplicationCreate call
+        will have a new loanApplicationId.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z0-9._-]{1,64}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="itemList" type="amz:itemList">
+    <xs:annotation>
+      <xs:documentation>
+        Dependent on the used call the itemList describes either the items of
+        the cart to be financed (loanApplication), the items of a shipping
+        (shippingConfirmation) or the items that got adjusted (loanAdjustment).
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+
+  <xs:element name="remittanceFileEntries" type="amz:remittanceFileEntries">
+    <xs:annotation>
+      <xs:documentation>
+        The remittanceFileEntries element contains all information lender
+        needs to create the remittance file entries for Amazon.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="loanDetails" type="amz:loanDetails">
+    <xs:annotation>
+      <xs:documentation>
+        The loanDetails element contains the loan amount (amount), the number
+        of installments (numberOfInstallments), a deviated first or last installment amount
+        (firstInstallmentAmount, lastInstallmentAmount) and the customer facing APRs
+        (aprNominal, aprEffective). Additionally, it contains the financing cost or
+        financing revenue (financingCost).
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="creditLineDetails" type="amz:creditLineDetails">
+    <xs:annotation>
+      <xs:documentation>
+        The creditLineDetails element contains the amount of the credit
+        line(creditLineAmount) and the expiration date (expirationDate) of the credit line.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+
+  <xs:element name="externalCreditLineId" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        The externalCreditLineId for the credit line granted by Lender.
+        It will need to be confirmed when Cofidis will review reuse use case.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="itemList">
+    <xs:annotation>
+      <xs:documentation>
+        The item list contains the type of the list (shopping basket, shipped
+        items or adjusted items), the aggregated adjustment amount and the currency. It also
+        contains detailed items of the specified list.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="items" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" type="amz:item" minOccurs="0" maxOccurs="unbounded"/>
+            <!-- Michael will provide the average number of items in a loan -->
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="amount" type="amz:AmountType">
+        <xs:annotation>
+          <xs:documentation>
+            Aggregated amount for the item list. In loanApplication calls
+            this amount is the purchase/basket amount including all line items including
+            tax and all additional charges (like shipping costs). In
+            shippingConfirmation calls this amount is the shipment amount of the
+            shipment that is covered by the loan including all line items including tax
+            and all additional charges (like shipping costs). In loanAdjustment calls
+            this amount is the refunded amount that is covered by the loan including tax
+            and all additional charges (like shipping costs).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="currency" type="amz:CurrencyCodeType">
+        <xs:annotation>
+          <xs:documentation>
+            Currency ISO-4217 code (numerical or alpha-3). Amazon is
+            using alpha-3 code.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="AmountType">
+    <xs:annotation>
+      <xs:documentation>
+        The value of the money, with 2 fractional digits. It could be negative.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CurrencyCodeType">
+    <xs:annotation>
+      <xs:documentation>
+        currencyCode the 3-letter ISO 4217 currency code for this currency
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z0-9]{3}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PercentageType">
+    <xs:annotation>
+      <xs:documentation>
+        The value represents a percentage.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2" />
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+
+  <xs:complexType name="item">
+    <xs:annotation>
+      <xs:documentation>
+        An item must contain itemId and quantity. All other elements are
+        optional.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="itemId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Item identifier from Amazon or CBA-merchant.
+            <!-- Cofidis: Format : ([(0-9)]) - MaxLength = 13 -->
+            <!-- Amazon: How is this field going to be used? [0-9]{1, 13} is too limited. -->
+            <!-- Action for Cofidis: Cofidis will use it as identifier, Cofidis needs to confirm with their back end system. -->
+            <!-- Action for Amazon: find out the exact format or example line item id-->
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="itemName" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The textual item description.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="250"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="quantity"  minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Quantity of items.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minExclusive value="0"/>
+            <xs:maxExclusive value="10000"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="totalPrice" type="amz:AmountType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Total net price of line Item Amount including tax. totalPrice
+            = (quantity * unitPrice) + tax.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="unitPrice" type="amz:AmountType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Net price of one unit excluding tax.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="itemCategory" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Article category defined by Amazon. -1 means mixed, 0 means unassigned.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="-1"/>
+            <xs:maxExclusive value="1000"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="taxRate" type="amz:PercentageType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Tax rate in percent for item.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="tax" type="amz:AmountType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Tax amount for total net price.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="remittanceFileEntries">
+    <xs:annotation>
+      <xs:documentation>
+        The remittanceFileEntries type contains a list of remittanceFileEntry
+        information lender needs to create the remittance file entries for Amazon.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="remittanceFileEntry" type="amz:remittanceFileEntry" minOccurs="1" maxOccurs="4"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="remittanceFileEntry">
+    <xs:annotation>
+      <xs:documentation>
+        The remittanceFileEntry element contains the variable information
+        needed by lender to create a remittance file entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="amount" type="amz:AmountType">
+        <xs:annotation>
+          <xs:documentation>
+            The amount of the remittance file entry.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="matchKey">
+        <xs:annotation>
+          <xs:documentation>
+            The match key of the remittance file entry. It is generated and provided by Amazon.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Za-z0-9_-]{1,27}" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="processingDivisionId">
+        <xs:annotation>
+          <xs:documentation>
+            The processingDivisionId of the remittance file entry. It is
+            generated and provided by Amazon. The processingDivisionId differentiate
+            between Amazon Retail and Amazon marketplace from a remittance file
+            perspective.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Za-z0-9]{1,9}" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="currency" type="amz:CurrencyCodeType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="adjustmentType">
+    <xs:annotation>
+      <xs:documentation>
+        The reason a loan is being adjusted. CONCESSION: will not be used
+        (handled via PC/GC, therefore no loanAdjustment necessary). PURCHASE_CLOSE:
+        Indicates that all items of the purchase were either cancelled or shipped. REFUND:
+        Indicates that one or more items of the purchase were returned by customer after
+        Amazon has delivered these items to customer.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CONCESSION"/>
+      <xs:enumeration value="PURCHASE_CLOSE"/>
+      <xs:enumeration value="REFUND"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="loanDetails">
+    <xs:annotation>
+      <xs:documentation>
+        The payment data contains the payment method and some detail
+        information.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="amount" type="amz:AmountType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Amount of the payment. Amount is mandatory for payment method INSTALLMENT.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="financingCosts" type="amz:AmountType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Calculation of Amazon's financial costs (Amazon owes Lender) or financial revenue (Lender owes Amazon).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="currency" type="amz:CurrencyCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Currency ISO-4217 code (numerical or alpha-3). Amazon is using alpha-3 code.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="installmentDetails" type="amz:installmentDetails" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation> Details of installment payments. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="loanMethod" type="amz:loanMethod" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Enumeration for the Amazon payment method used. Values are:
+            INSTALLMENT_CC (credit card based installments) and INSTALLMENT_DD (direct
+            debit related installments).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="creditLineDetails">
+    <xs:annotation>
+      <xs:documentation>
+        Details for credit line granted to customer by lender.
+        Credit line can be used for several purchases.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="externalCreditLineId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The credit line number created by lender, this is payment instrument data.
+            <!-- Cofidis: Format : To be confirmed -->
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="externalCreditLineCode" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The credit line verification code, this is payment instrument data as well.
+            <!-- Cofidis: Format : To be confirmed -->
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:simpleType name="loanMethod">
+    <xs:annotation>
+      <xs:documentation>
+        INSTALLMENT_CC: Credit Card backed installments such as 4CB.
+        INSTALLMENT_DD: direct debit related installments, such as Pay Monthly or Reuse a credit line
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="INSTALLMENT_CC"/>
+      <xs:enumeration value="INSTALLMENT_DD"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="installmentDetails">
+    <xs:annotation>
+      <xs:documentation> All details for installment payments. </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="numberOfInstallments" type="xs:int" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Number of months the customer has to pay the monthly
+            installments.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="installmentAmount" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Amount customer has to pay each month (exception: first or
+            last month). Cofidis won't use it as long as the application is hosted by Cofidis; 
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="firstInstallmentAmount" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Amount of first installment payment if deviates from
+            remaining installments. Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lastInstallmentAmount" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Amount of last installment payment if deviates from remaining
+            installments. Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="paymentFirstDay" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional: Calendar day of customers installment payment.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="aprNominal" type="amz:PercentageType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Interest rate of installment (without fees).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fees" type="amz:PercentageType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Fees for the customer in the form of percentage.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="aprEffective" type="amz:PercentageType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Interest rate of installment (including fees).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="deposit" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Deposit amount that Amazon charged Customer on behalf of
+            lender.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerInterestStartDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            FOR PHASE 2. Optional date on which customer wants to start
+            the interest calculation of the loan. If this date is omitted then lender
+            will calculate date based on contractual agreement between Amazon and
+            lender.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerFirstPaymentDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            FOR PHASE 2. Optional date on which customer wants to
+            initiate the first installment payment of the loan. If this date is omitted
+            then lender will calculate date based on contractual agreement between
+            Amazon and lender.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerWishedCalendarDay" type="xs:int" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            FOR PHASE 2. Optional day in month on which customer wants to
+            initiate all installment payments. If calendar day lead to nonexistent
+            payment date (e.g. 31-Feb-2014), it will be moved forward by lender (e.g.
+            03-May-2014). If this value is omitted then lender will evaluate calendar
+            day based on contractual agreement between Amazon and lender.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ResponseResultType">
+    <xs:annotation>
+      <xs:documentation>
+        ACCEPTED(response code 0): Loan is accepted by lender.
+        REJECTED(response code 100-199): Loan was rejected by lender.
+        PENDING(response code 200-299): This status has to be resolved in 24 hours, otherwise Amazon will notify customer to change payment method.
+        PROCESSING_ERROR(response code 300-399): Field responseResultCode and responseResultDescription will contain additional information regarding Processing error.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ACCEPTED"/>
+      <xs:enumeration value="REJECTED"/>
+      <xs:enumeration value="PENDING"/>
+      <xs:enumeration value="PROCESSING_ERROR"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResponseResultCodeType">
+    <xs:restriction base="xs:int">
+      <xs:pattern value="\d{1,3}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResponseResultDescriptionType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="255"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="customer" type="amz:customer">
+    <xs:annotation>
+      <xs:documentation>
+        The customer element contains all information lender needs to be able
+        to perform a decision on giving customer a loan or not.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="customer">
+    <xs:annotation>
+      <xs:documentation> Customer data structure. </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="title" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional title of the customer.
+            When the application is hosted by Cofidis, Amazon will not pass this information.
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="givenName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The given name of the customer. Mandatory for request,
+            optional for response.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="middleName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation> Optional middle name of the customer. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="familyName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The surname or family name of the customer. Mandatory for
+            request, optional for response.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="namePrefix" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional salutation or name prefix.
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="nameSuffix" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional name suffix like "Sen." or "Jun.".
+            Cofidis won't use it as long as the application is hosted by Cofidis;
+            however, we decided to keep it as it may be used when Amazon hosts the application in the future.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="contactInfo" type="amz:contactInfo" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Contact data of the customer. Mandatory for request, optional
+            for response.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="addresses" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            One or more customer addresses. Mandatory for request,
+            optional for response.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="address" type="amz:address" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marketingCode" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional definition of customer's marketing category by Amazon.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="contactInfo">
+    <xs:annotation>
+      <xs:documentation> Contact data of the customer. </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="email" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Primary E-Mail address.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="homePhone" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Primary home phone number. It would only be populated when Amazon hosted the application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="workPhone" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Primary work phone number. It would only be populated when Amazon hosted the application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="mobilePhone" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Primary mobile number. It would only be populated when Amazon hosted the application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fax" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Primary fax number.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="addressType" type="amz:addressType">
+        <xs:annotation>
+          <xs:documentation>
+            Type of the address.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="destinationType" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Destination type of the address, such as pick up address, or residential address.
+            Billing address may not have a destination type.
+            <!-- Action for Amazon: reach out to the AddressAuthorityService team to find out how likely new types will be added.-->
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="validFrom" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation> Date from which address is/was valid. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="validTo" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Date until which address was valid.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="receiver" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Additional shipping address information such as receiver
+            name, corporate address or c/o info for receiver of shipping.
+            This field will not be set when Cofidis hosted the application form.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="street" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The street name. May contain also the street number (only if
+            it is not possible the send the street number separately).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="streetAdditional" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            May contain additional address information such as a building
+            name or building number.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="streetNumber" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Street number or house number. If it is not possible to send
+            the street number separately it may be sent together with the "street".
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="flatNumber" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Flat number or name.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="city" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Name of the city.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="stateOrRegion" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            State or region of the address.
+            <!-- Cofidis: Won't be used nor controlled by Cofidis -->
+            <!-- Amazon: The addresses sent by Amazon.fr may include a optional State/Region/Canton-->
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="countyOrDistrict" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            County or district of the address.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="postalCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Postal code (ZIP, etc.) of the address.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="countryCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            ISO-3166 country code (numerical, alpha-2 or alpha-3). Amazon
+            is using alpha-3 code.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="isChecked" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Boolean flag that indicates, if an address is correct
+            according to Amazon’s AdressValidation service. Amazon’s AddressValidation
+            service is “soft” therefore customer can decide if the original address or
+            the corrected address will be used. This flag indicates that the address was
+            a validated or not.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="residentialStatus" type="amz:residentialStatus" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Enumeration for residential status. Values are OWNER,
+            LIVING_WITH_PARENTS, TENANT_UNFURNISHED, TENANT_FURNISHED".
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="phone" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The phone number associated with the containing address.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="addressType">
+    <xs:annotation>
+      <xs:documentation>
+        BILLING for billing address,
+        SHIPPING for shipping address,
+        REGISTRATION for customer specified address in amazon hosted application only.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BILLING"/>
+      <xs:enumeration value="REGISTRATION"/>
+      <xs:enumeration value="SHIPPING"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="residentialStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OWNER"/>
+      <xs:enumeration value="LIVING_WITH_PARENTS"/>
+      <xs:enumeration value="TENANT_UNFURNISHED"/>
+      <xs:enumeration value="TENANT_FURNISHED"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="customerRiskCategory">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="A"/>
+      <xs:enumeration value="B"/>
+      <xs:enumeration value="C"/>
+      <xs:enumeration value="D"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

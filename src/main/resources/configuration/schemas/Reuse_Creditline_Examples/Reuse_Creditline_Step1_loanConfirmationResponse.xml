@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<loanConfirmationResponse version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../gil_fr.xsd">
+  <timestamp>2015-07-03T00:30:22.345</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID1</transactionId>
+  <requestId>1</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <responseResult>ACCEPTED</responseResult>
+  <responseResultCode>0</responseResultCode>
+  <responseResultDescription>All Ok.</responseResultDescription>
+  <externalLoanId>0123456789</externalLoanId> <!-- This is a brand new loan id for this purchase -->
+</loanConfirmationResponse>

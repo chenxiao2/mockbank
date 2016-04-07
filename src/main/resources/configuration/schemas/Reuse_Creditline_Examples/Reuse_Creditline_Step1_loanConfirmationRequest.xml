@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<loanConfirmationRequest version="1"
+  xmlns="http://payments.amazon.com/globalinstallmentlending/protocol/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://payments.amazon.com/globalinstallmentlending/protocol/v1 ../gil_fr.xsd">
+  <timestamp>2015-07-03T00:30:22.345</timestamp>
+  <systemId>85.183.32.68</systemId>
+  <transactionId>Base64UUID1</transactionId>
+  <requestId>1</requestId>
+  <merchantId>Amazon</merchantId>
+  <marketplaceId>FR</marketplaceId>
+  <externalCreditLineId>Cofidis_Credit_Line_Id</externalCreditLineId> <!-- The credit line id is from a previous creditlineStatusNofication call-->
+  <loanDetails>
+    <amount>2000.00</amount>
+    <financingCosts>-100.00</financingCosts>
+    <currency>EUR</currency>
+    <installmentDetails>
+      <numberOfInstallments>10</numberOfInstallments>
+      <installmentAmount>200.0</installmentAmount>
+      <lastInstallmentAmount>200.0</lastInstallmentAmount>
+      <aprNominal>0.00</aprNominal>
+      <aprEffective>0.00</aprEffective>
+    </installmentDetails>
+    <loanMethod>INSTALLMENT_DD</loanMethod>
+  </loanDetails>
+  <itemList>
+    <items>
+      <item>
+        <itemId>ASIN_A</itemId>
+        <itemName>Sample item A</itemName>
+        <quantity>1</quantity>
+        <totalPrice>800.00</totalPrice>
+        <unitPrice>666.67</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>133.33</tax>
+      </item>
+      <item>
+        <itemId>ASIN_B</itemId>
+        <itemName>Sample item B</itemName>
+        <quantity>1</quantity>
+        <totalPrice>400.00</totalPrice>
+        <unitPrice>333.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>66.67</tax>
+      </item>
+      <item>
+        <itemId>ASIN_C</itemId>
+        <itemName>Sample item C</itemName>
+        <quantity>1</quantity>
+        <totalPrice>700.00</totalPrice>
+        <unitPrice>583.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>116.67</tax>
+      </item>
+      <item>
+        <itemId>ASIN_D</itemId>
+        <itemName>Sample item D</itemName>
+        <quantity>1</quantity>
+        <totalPrice>100.00</totalPrice>
+        <unitPrice>83.33</unitPrice>
+        <itemCategory>23</itemCategory>
+        <taxRate>20</taxRate>
+        <tax>16.67</tax>
+      </item>
+    </items>
+    <amount>2000.00</amount>
+    <currency>EUR</currency>
+  </itemList>
+</loanConfirmationRequest>
