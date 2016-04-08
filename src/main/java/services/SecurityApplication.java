@@ -12,7 +12,7 @@ import java.util.Set;
 public class SecurityApplication extends Application {
     private Set<Object> singletons = new HashSet<>();
 
-    public SecurityApplication() {
+    public SecurityApplication() throws Exception {
         singletons.add(new CryptoResource());
     }
 
