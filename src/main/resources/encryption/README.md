@@ -8,3 +8,5 @@
    is replaced by RSA <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" />
 3. The previous encypted XML example does not sign the XML document either.
 4. The encrypted XML doc has been optimized to reduce redundant namespaces.
+5. Both Encryption and Decryption process take 10 to 20 ms,
+   based on my desktop running an Intel Core i5-2320 2nd-gen @3.00GHZ
