@@ -6,4 +6,9 @@
 or
 
   mvn jetty:run-war
+
+
+1. Learn JAXB
+2. implement mockbank
+3. migrate to Scalatra
   
