@@ -14,6 +14,7 @@ public class SecurityApplication extends Application {
 
     public SecurityApplication() throws Exception {
         singletons.add(new CryptoResource());
+        singletons.add(new LoanApplicationResource());
     }
 
     @Override
