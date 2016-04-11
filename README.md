@@ -18,7 +18,8 @@ or
 
 
 ## TODO
-1. Finish mockbank implementation
+1. [ ] mockbank implementation
+  - [x] implement LoanApplicationCreation
   - [ ] implement LoanStatusNotification
   - [ ] implement LoanConfirmation
   - [ ] implement LoanAdjustment
