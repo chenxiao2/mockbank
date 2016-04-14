@@ -16,6 +16,12 @@ or
 
   mvn jetty:run-war
 
+## to run as a docker container
+  - build the image `docker build -t <namespace>/<imagename> .`
+  - check the image `docker images`
+  - run the docker container using the built image `docker run -p 18080:8080 -d <namespace>/<imagename>`
+  - then the server will download runtime dependencies and start,
+    wait for about one minutes and use `docker logs <container>` to check the status of the server.
 
 ## TODO
 1. [ ] mockbank implementation
