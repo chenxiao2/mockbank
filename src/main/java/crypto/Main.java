@@ -25,7 +25,7 @@ public class Main {
         //listProviders();
         //encryptWithBC("plaintext");
         //printUUIDtoString();
-//        String xmlString = readXMLtoString("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
+        String xmlString = readXMLtoString("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
 //        System.out.println("Length of xml string: " + xmlString.length());
 //        System.out.println(messageDigest(xmlString));
 ////        encryptWithRSAOAEP(xmlString);
@@ -42,8 +42,9 @@ public class Main {
 //        System.out.println(messageDigest(plaintext));
 //        System.out.println(plaintext);
 
-        String encryptedString = readXMLtoString("src/main/resources/encryption/EncryptedLoanApplicationCreationRequest.xml");
+//        String encryptedString = readXMLtoString("src/main/resources/encryption/EncryptedLoanApplicationCreationRequest.xml");
         Cryptor cryptor = new Cryptor();
+        String encryptedString = cryptor.encrypt(xmlString);
         String xml = cryptor.decrypt(encryptedString);
         System.out.println(xml);
 
