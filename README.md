@@ -23,6 +23,15 @@ or
   - then the server will download runtime dependencies and start,
     wait for about one minutes and use `docker logs <container>` to check the status of the server.
 
+## to generate a RSA key pair used for encryption and decryption
+```bash
+$ openssl genrsa -out rsa.key 2048 # generate a RSA 2048 bits key pair
+$ openssl rsa -text -in rsa.key # display the generated RSA key pair
+$ openssl pkcs8 -topk8 -nocrypt -in rsa.key -out rsa1.pk8 # extract the private key in PKCS8 format
+$ openssl rsa -text -in rsa.pk8 # display the generated RSA private key
+$ openssl rsa -pubout -in rsa.key -out rsa.x509 # extract the public key
+```
+
 ## TODO
 1. [ ] mockbank implementation
   - [x] implement LoanApplicationCreation

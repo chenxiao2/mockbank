@@ -1,7 +1,8 @@
 FROM maven:3.3.3-jdk-8
 
 COPY src /src/src
-COPY pom.xml /src/pom.xml
+COPY pom.xml /src/
+COPY rsa* /src/
 
 WORKDIR /src
 

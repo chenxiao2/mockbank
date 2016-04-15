@@ -10,24 +10,44 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static crypto.Main.readTextFromFile;
 
 /**
  * Created by liang on 4/8/2016.
  */
 public class Cryptor {
 
+    private static final String PUB_KEY_PATH = "rsa.x509";
+    private static final String PRIV_KEY_PATH = "rsa.pk8";
+
     private KeyPair keyPair;
 
     public Cryptor() throws Exception {
         addBouncyCastle();
-        this.keyPair = generateRSAKey(2048);
-        writeRSAKey();
+        if ((new File(PUB_KEY_PATH)).exists() && (new File(PRIV_KEY_PATH)).exists()) {
+            this.keyPair = new KeyPair(Cryptor.readPublickey(PUB_KEY_PATH), Cryptor.readPrivateKey(PRIV_KEY_PATH));
+            System.out.println("Use existing key pair");
+        }else {
+            this.keyPair = generateRSAKey(2048);
+            writeRSAKey();
+            System.out.println("generate key pair");
+        }
+
+    }
+
+    public Cryptor(PublicKey pubKey, PrivateKey privKey) {
+        addBouncyCastle();
+        this.keyPair = new KeyPair(pubKey, privKey);
     }
 
 
@@ -133,10 +153,10 @@ public class Cryptor {
     }
 
     private void writeRSAKey() throws Exception {
-        final String RSA_PRIVATE_KEY = "RSA PRIVATE KEY";
+        final String RSA_PRIVATE_KEY = "PRIVATE KEY";
         final String RSA_PUBLIC_KEY = "PUBLIC KEY";
         PemObject pemObject = new PemObject(RSA_PUBLIC_KEY, this.keyPair.getPublic().getEncoded());
-        PemWriter pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream("id_rsa.pub")));
+        PemWriter pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream(PUB_KEY_PATH)));
         try {
             pemWriter.writeObject(pemObject);
         } finally {
@@ -144,7 +164,7 @@ public class Cryptor {
         }
 
         pemObject = new PemObject(RSA_PRIVATE_KEY, this.keyPair.getPrivate().getEncoded());
-        pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream("id_rsa")));
+        pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream(PRIV_KEY_PATH)));
         try {
             pemWriter.writeObject(pemObject);
         } finally {
@@ -158,5 +178,33 @@ public class Cryptor {
         int precedenceOrder = Security.addProvider(bcprov);
         System.out.println("added  " + bcprov.getName() + " " + bcprov.getVersion() + " as precedence " + precedenceOrder);
     }
+
+    public static PrivateKey readPrivateKey(String filepath) throws Exception {
+        String privKeyPEM = readTextFromFile(filepath);
+        privKeyPEM = privKeyPEM.replace("-----BEGIN PRIVATE KEY-----", "");
+        privKeyPEM = privKeyPEM.replace("-----END PRIVATE KEY-----", "");
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] privKeyBytes = decoder.decode(privKeyPEM);
+        PKCS8EncodedKeySpec pk8Spec = new PKCS8EncodedKeySpec(privKeyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PrivateKey privKey =  keyFactory.generatePrivate(pk8Spec);
+        return privKey;
+    }
+
+    public static PublicKey readPublickey(String filepath) throws Exception {
+        String pubKeyPEM = readTextFromFile(filepath);
+        pubKeyPEM = pubKeyPEM.replace("-----BEGIN PUBLIC KEY-----", "");
+        pubKeyPEM = pubKeyPEM.replace("-----END PUBLIC KEY-----", "");
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] pubKeyBytes = decoder.decode(pubKeyPEM);
+        X509EncodedKeySpec x509Spec = new X509EncodedKeySpec(pubKeyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PublicKey publicKey = keyFactory.generatePublic(x509Spec);
+        return publicKey;
+
+    }
+
 
 }

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 public class CryptoResource {
     private Cryptor cryptor;
     public CryptoResource() throws Exception {
+
         cryptor = new Cryptor();
     }
 

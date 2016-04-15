@@ -1,11 +1,8 @@
 package crypto;
 
 import com.google.common.primitives.Bytes;
-import crypto.CipherKeyAndData;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -25,7 +22,7 @@ public class Main {
         //listProviders();
         //encryptWithBC("plaintext");
         //printUUIDtoString();
-        String xmlString = readXMLtoString("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
+        String xmlString = readTextFromFile("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step1_loanApplicationCreationRequest.xml");
 //        System.out.println("Length of xml string: " + xmlString.length());
 //        System.out.println(messageDigest(xmlString));
 ////        encryptWithRSAOAEP(xmlString);
@@ -42,7 +39,14 @@ public class Main {
 //        System.out.println(messageDigest(plaintext));
 //        System.out.println(plaintext);
 
-//        String encryptedString = readXMLtoString("src/main/resources/encryption/EncryptedLoanApplicationCreationRequest.xml");
+//        String encryptedString = readTextFromFile("src/main/resources/encryption/EncryptedLoanApplicationCreationRequest.xml");
+        PrivateKey privKey = Cryptor.readPrivateKey("rsa.pk8");
+        System.out.println(String.join(":::", privKey.getAlgorithm(), privKey.getFormat()));
+
+        PublicKey pubKey = Cryptor.readPublickey("rsa.x509");
+        System.out.println(String.join(":::", pubKey.getAlgorithm(), pubKey.getFormat()));
+
+//        Cryptor cryptor = new Cryptor(pubKey, privKey);
         Cryptor cryptor = new Cryptor();
         String encryptedString = cryptor.encrypt(xmlString);
         String xml = cryptor.decrypt(encryptedString);
@@ -182,7 +186,7 @@ public class Main {
         System.out.println(UUID.randomUUID().toString());
     }
 
-    private static String readXMLtoString(String path) throws Exception {
+    static String readTextFromFile(String path) throws Exception {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(path))){
             String line = br.readLine();
