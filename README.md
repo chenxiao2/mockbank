@@ -45,6 +45,7 @@ $ keytool -list -keystore truststore -v
 $ java -Djavax.net.ssl.trustStore=truststore SSLSimpleClient
 $ java -Djavax.net.ssl.keyStore=keystore -Djavax.net.ssl.keyStorePassword=password SSLSimpleServer
 ```
+or open a web browser and visit https://localhost:9090/
 
 
 ## TODO
