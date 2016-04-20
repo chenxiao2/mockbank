@@ -1,7 +1,10 @@
 package ssl;
 
 import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,35 +13,47 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class SSLSimpleServer extends Thread {
-
+    static final int PORT = 9090;
     public static void main(String[] args) throws Exception {
-        ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
-        ServerSocket ss = ssf.createServerSocket(Integer.parseInt(args[0]));
+        SSLServerSocketFactory sslServerSocketFactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
+        SSLServerSocket sslServerSocket = (SSLServerSocket)sslServerSocketFactory.createServerSocket(PORT);
+        System.out.println("EnableSessionCreation: " + sslServerSocket.getEnableSessionCreation());
+        System.out.println("WantClientAuth: " + sslServerSocket.getWantClientAuth());
+        System.out.println("NeedClientAuth: " + sslServerSocket.getNeedClientAuth());
+        System.out.println("UseClientMode: " + sslServerSocket.getUseClientMode());
 
         while (true) {
-            new SSLSimpleServer(ss.accept()).start();
+            SSLSocket sslSocket = (SSLSocket)sslServerSocket.accept();
+            new SSLSimpleServer(sslSocket).start();
         }
     }
 
-    private Socket sock;
+    private SSLSocket sslSocket;
 
-    public SSLSimpleServer(Socket s) {
-        sock = s;
+    public SSLSimpleServer(SSLSocket sslSocket) {
+        this.sslSocket = sslSocket;
+        this.sslSocket.addHandshakeCompletedListener((event) -> System.out.println("Handshake completed"));
     }
 
     public void run() {
         try {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(
-                            sock.getInputStream()));
-            PrintWriter pw = new PrintWriter(sock.getOutputStream());
+            SSLSession sslSession = sslSocket.getSession();
+            SSLSimpleClient.inspectSSLSession(sslSession);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
+            PrintWriter pw = new PrintWriter(sslSocket.getOutputStream());
 
             String data = br.readLine();
-            pw.println("What is she?");
+//            while(data != null) {
+                System.out.println("received: " + data);
+//                data = br.readLine();
+//            }
+            pw.println("he is my son.");
+
             pw.close();
-            sock.close();
+            sslSocket.close();
         } catch (IOException ioe) {
-            // Client disconnected; exit this thread
+            ioe.printStackTrace();
         }
     }
 }

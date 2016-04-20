@@ -32,6 +32,21 @@ $ openssl rsa -text -in rsa.pk8 # display the generated RSA private key
 $ openssl rsa -pubout -in rsa.key -out rsa.x509 # extract the public key
 ```
 
+## set up a keystore and truststore for SSL server and client respectively
+```
+$ keytool -genkeypair -keystore keystore -alias liang -keyalg RSA -sigalg SHA256WITHRSA -keysize 2048 #step 1: generate a keypair into keystore
+$ keytool -list -keystore keystore -v
+$ keytool -exportcert -rfc -keystore keystore -alias liang -file liang.cer #step 2: export the certificate from keystore
+$ cat liang.cer
+$ openssl x509 -in liang.cer -text
+$ keytool -importcert -alias liang -keystore truststore -file liang.cer #step 3: import the certificate into truststore
+$ keytool -list -keystore truststore -v
+
+$ java -Djavax.net.ssl.trustStore=truststore SSLSimpleClient
+$ java -Djavax.net.ssl.keyStore=keystore -Djavax.net.ssl.keyStorePassword=password SSLSimpleServer
+```
+
+
 ## TODO
 1. [ ] mockbank implementation
   - [x] implement LoanApplicationCreation
