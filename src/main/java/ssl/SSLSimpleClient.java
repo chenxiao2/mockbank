@@ -34,20 +34,20 @@ public class SSLSimpleClient {
     }
 
     public static void inspectSSLSession(SSLSession sslSession){
-        System.out.println("ApplicationBufferSize: " + sslSession.getApplicationBufferSize());
-        System.out.println("CipherSuite: " + sslSession.getCipherSuite());
-        System.out.println("Protocol: " + sslSession.getProtocol());
-        System.out.println("CreationTime: " + Instant.ofEpochMilli(sslSession.getCreationTime()).atZone(ZoneId.systemDefault()));
-        System.out.println("LastAccessedTime: " + Instant.ofEpochMilli(sslSession.getLastAccessedTime()).atZone(ZoneId.systemDefault()));
+        System.out.println(">>ApplicationBufferSize: " + sslSession.getApplicationBufferSize());
+        System.out.println(">>CipherSuite: " + sslSession.getCipherSuite());
+        System.out.println(">>Protocol: " + sslSession.getProtocol());
+        System.out.println(">>CreationTime: " + Instant.ofEpochMilli(sslSession.getCreationTime()).atZone(ZoneId.systemDefault()));
+        System.out.println(">>LastAccessedTime: " + Instant.ofEpochMilli(sslSession.getLastAccessedTime()).atZone(ZoneId.systemDefault()));
 
-        System.out.println("LocalPrinciple: " + sslSession.getLocalPrincipal());
-        System.out.println("LocalCertificates.size: " + (sslSession.getLocalCertificates() != null ?
+        System.out.println(">>LocalPrinciple: " + sslSession.getLocalPrincipal());
+        System.out.println(">>LocalCertificates.size: " + (sslSession.getLocalCertificates() != null ?
                 sslSession.getLocalCertificates().length : null));
 
-        System.out.println("PeerHost:PearPort " + sslSession.getPeerHost() + ":" + sslSession.getPeerPort());
+        System.out.println(">>PeerHost:PearPort " + sslSession.getPeerHost() + ":" + sslSession.getPeerPort());
         try {
-            System.out.println("PeerPrinciple: " + sslSession.getPeerPrincipal());
-            System.out.println("PeerCertificates.size: " + sslSession.getPeerCertificates().length);
+            System.out.println(">>PeerPrinciple: " + sslSession.getPeerPrincipal());
+            System.out.println(">>PeerCertificates.size: " + sslSession.getPeerCertificates().length);
         } catch (SSLPeerUnverifiedException e) {
             e.printStackTrace();
         }
