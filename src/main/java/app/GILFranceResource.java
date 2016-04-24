@@ -1,4 +1,4 @@
-package services;
+package app;
 
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 
@@ -7,10 +7,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.io.InputStream;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
@@ -18,13 +16,12 @@ import java.util.GregorianCalendar;
 /**
  * Created by liang on 4/10/2016.
  */
-@Path("/")
-public class LoanApplicationResource {
+@Path("gil/fr")
+public class GILFranceResource {
 
     @POST
-    @Consumes({MediaType.APPLICATION_XML,"text/xml"})
+    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
     @Produces(MediaType.TEXT_XML)
-    @Path("")
     public LoanApplicationCreationResponse handle(LoanApplicationCreationRequest request) throws Exception {
         LoanApplicationCreationResponse response = new LoanApplicationCreationResponse();
         fillCommonResponse(request, response);
@@ -54,15 +51,16 @@ public class LoanApplicationResource {
             response.setResponseResultCode(0);
             response.setResponseResultDescription("All OK!");
         }
-        else if(request.getCustomer().getFamilyName().endsWith("RR")) {
-            response.setResponseResult(ResponseResultType.PENDING);
-            response.setResponseResultCode(200);
-            response.setResponseResultDescription("Pending");
-        }
         else if(request.getCustomer().getFamilyName().endsWith("DD")) {
             response.setResponseResult(ResponseResultType.REJECTED);
             response.setResponseResultCode(100);
             response.setResponseResultDescription("Rejected");
         }
+        else {
+            response.setResponseResult(ResponseResultType.PENDING);
+            response.setResponseResultCode(200);
+            response.setResponseResultDescription("Pending");
+        }
+
     }
 }

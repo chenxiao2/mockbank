@@ -1,9 +1,9 @@
 ## Avaiable action
-- http://address:8080/services/encrypt
+- http://address:8080/xml/encrypt
   - POST: encrypt a XML document
-- http://address:8080/services/decrypt
+- http://address:8080/xml/decrypt
   - POST: decrypt an encrypted XML document
-- http://address:8080/services for mockbank
+- http://address:8080/gil/fr for GIL FR mockbank
   - POST: XML request with Content-Type application/xml or text/xml
 
 

@@ -80,7 +80,7 @@ public class Cryptor {
         Pattern p = Pattern.compile(pattern, Pattern.DOTALL);
         Matcher matcher = p.matcher(ciphertext);
         if (!matcher.matches()) {
-            return "Invalid XML Enc format";
+            return "Invalid XML Enc format:\n " + ciphertext;
         }
         CipherKeyAndData cipherKeyAndData = new CipherKeyAndData(matcher.group(1), matcher.group(2));
         return decrypt(cipherKeyAndData, keyPair.getPrivate());

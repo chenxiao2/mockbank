@@ -1,4 +1,4 @@
-package services;
+package app;
 
 import crypto.Cryptor;
 import org.apache.commons.io.IOUtils;
@@ -14,12 +14,13 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by liang on 4/7/2016.
+ * Encryption and decryption per <a href="https://www.w3.org/TR/2002/REC-xmlenc-core-20021210/Overview.html">
+ *     XML Encryption Syntax and Processing</a> standard.
  */
-@Path("/")
-public class CryptoResource {
+@Path("xml")
+public class XMLEncryptionResource {
     private Cryptor cryptor;
-    public CryptoResource() throws Exception {
+    public XMLEncryptionResource() throws Exception {
 
         cryptor = new Cryptor();
     }
