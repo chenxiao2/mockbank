@@ -67,6 +67,11 @@ or open a web browser and visit https://localhost:9090/
 5. [ ] migrate to Scalatra
 6. [ ] Improve deployment and maintainance
   - [ ] Proxied by CloudFront
-  - [ ] move to ECS and/or Elastic Beanstalk
+  - [x] deploy to ECS
+  - [ ] deploy to Elastic Beanstalk
+7. [ ] Error handling
+8. [ ] Message validation
+9. [ ] Integration testing
+
 
   
