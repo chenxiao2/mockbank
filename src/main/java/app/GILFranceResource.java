@@ -46,12 +46,15 @@ public class GILFranceResource {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget = client.target(clientEndpoint);
         Invocation invocation = webTarget.request().buildPost(Entity.xml(request));
-        if (isAsync) {
-            Future<LoanStatusNotificationResponse> futureResponse = invocation.submit(LoanStatusNotificationResponse.class);
-            return futureResponse.get();
-        }
-        else {
-            return invocation.invoke(LoanStatusNotificationResponse.class);
+        try {
+            if (isAsync) {
+                Future<LoanStatusNotificationResponse> futureResponse = invocation.submit(LoanStatusNotificationResponse.class);
+                return futureResponse.get();
+            } else {
+                return invocation.invoke(LoanStatusNotificationResponse.class);
+            }
+        } finally {
+            client.close();
         }
     }
 
