@@ -1,8 +1,6 @@
 package app;
 
-import com.amazon.payments.globalinstallmentlending.protocol.v1.LoanApplicationCreationRequest;
-import com.amazon.payments.globalinstallmentlending.protocol.v1.LoanApplicationCreationResponse;
-import com.amazon.payments.globalinstallmentlending.protocol.v1.ResponseResultType;
+import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -64,5 +62,41 @@ public class GILFranceResourceTest {
         assertEquals(request.getMarketplaceId(),response.getMarketplaceId());
         assertEquals(request.getMerchantId(),response.getMerchantId());
         assertEquals(ResponseResultType.PENDING,response.getResponseResult());
+    }
+
+    @Test
+    public void testLoanConfirmation() throws FileNotFoundException, JAXBException {
+
+        InputStream is = new FileInputStream("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step3_loanConfirmationRequest.xml");
+        LoanConfirmationRequest request = (LoanConfirmationRequest)unmarshaller.unmarshal(is);
+        LoanConfirmationResponse response =
+                webTarget.request().post(Entity.xml(request), LoanConfirmationResponse.class);
+        assertEquals(request.getMarketplaceId(),response.getMarketplaceId());
+        assertEquals(request.getMerchantId(),response.getMerchantId());
+        assertEquals(ResponseResultType.ACCEPTED,response.getResponseResult());
+    }
+
+    @Test
+    public void testLoanAdjustment() throws FileNotFoundException, JAXBException {
+
+        InputStream is = new FileInputStream("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step5_loanAdjustmentRequest_PURCHASE_CLOSE.xml");
+        LoanAdjustmentRequest request = (LoanAdjustmentRequest)unmarshaller.unmarshal(is);
+        LoanAdjustmentResponse response =
+                webTarget.request().post(Entity.xml(request), LoanAdjustmentResponse.class);
+        assertEquals(request.getMarketplaceId(),response.getMarketplaceId());
+        assertEquals(request.getMerchantId(),response.getMerchantId());
+        assertEquals(ResponseResultType.ACCEPTED,response.getResponseResult());
+    }
+
+    @Test
+    public void testLoanCharge() throws FileNotFoundException, JAXBException {
+
+        InputStream is = new FileInputStream("src/main/resources/configuration/schemas/4CB_Examples/4CB_Step6_loanChargeRequest.xml");
+        LoanChargeRequest request = (LoanChargeRequest)unmarshaller.unmarshal(is);
+        LoanChargeResponse response =
+                webTarget.request().post(Entity.xml(request), LoanChargeResponse.class);
+        assertEquals(request.getMarketplaceId(),response.getMarketplaceId());
+        assertEquals(request.getMerchantId(),response.getMerchantId());
+        assertEquals(ResponseResultType.ACCEPTED,response.getResponseResult());
     }
 }

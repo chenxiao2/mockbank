@@ -22,10 +22,56 @@ public class GILFranceResource {
     @POST
     @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
     @Produces(MediaType.TEXT_XML)
+    public Response handle(Request request) throws Exception {
+        if(request instanceof LoanApplicationCreationRequest)
+            return handle((LoanApplicationCreationRequest)request);
+        else if(request instanceof LoanConfirmationRequest)
+            return handle((LoanConfirmationRequest)request);
+        else if(request instanceof LoanAdjustmentRequest)
+            return handle((LoanAdjustmentRequest)request);
+        else if(request instanceof LoanChargeRequest)
+            return handle((LoanChargeRequest)request);
+        else
+            return null;
+    }
+
+//    @POST
+//    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
+//    @Produces(MediaType.TEXT_XML)
     public LoanApplicationCreationResponse handle(LoanApplicationCreationRequest request) throws Exception {
         LoanApplicationCreationResponse response = new LoanApplicationCreationResponse();
         fillCommonResponse(request, response);
         determineApplicationResult(request, response);
+        return response;
+    }
+
+//    @POST
+//    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
+//    @Produces(MediaType.TEXT_XML)
+    public LoanConfirmationResponse handle(LoanConfirmationRequest request) throws Exception {
+        LoanConfirmationResponse response = new LoanConfirmationResponse();
+        fillCommonResponse(request, response);
+        determineConfirmationResult(request, response);
+        return response;
+    }
+
+//    @POST
+//    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
+//    @Produces(MediaType.TEXT_XML)
+    public LoanAdjustmentResponse handle(LoanAdjustmentRequest request) throws Exception {
+        LoanAdjustmentResponse response = new LoanAdjustmentResponse();
+        fillCommonResponse(request, response);
+        determineAdjustmentResult(request, response);
+        return response;
+    }
+
+//    @POST
+//    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
+//    @Produces(MediaType.TEXT_XML)
+    public LoanChargeResponse handle(LoanChargeRequest request) throws Exception {
+        LoanChargeResponse response = new LoanChargeResponse();
+        fillCommonResponse(request, response);
+        determineChargeResult(request, response);
         return response;
     }
 
@@ -61,6 +107,24 @@ public class GILFranceResource {
             response.setResponseResultCode(200);
             response.setResponseResultDescription("Pending");
         }
+    }
 
+    private void determineConfirmationResult(LoanConfirmationRequest request, LoanConfirmationResponse response) {
+        response.setExternalLoanId(request.getExternalLoanId());
+        response.setResponseResult(ResponseResultType.ACCEPTED);
+        response.setResponseResultCode(0);
+        response.setResponseResultDescription("All OK!");
+    }
+
+    private void determineAdjustmentResult(LoanAdjustmentRequest request, LoanAdjustmentResponse response) {
+        response.setResponseResult(ResponseResultType.ACCEPTED);
+        response.setResponseResultCode(0);
+        response.setResponseResultDescription("All OK!");
+    }
+
+    private void determineChargeResult(LoanChargeRequest request, LoanChargeResponse response) {
+        response.setResponseResult(ResponseResultType.ACCEPTED);
+        response.setResponseResultCode(0);
+        response.setResponseResultDescription("All OK!");
     }
 }
