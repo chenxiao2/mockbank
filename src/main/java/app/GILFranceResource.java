@@ -2,16 +2,17 @@ package app;
 
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.concurrent.Future;
+
+import static app.util.GILFranceUtil.fillCommonResponse;
 
 /**
  * Created by liang on 4/10/2016.
@@ -33,6 +34,25 @@ public class GILFranceResource {
             return handle((LoanChargeRequest)request);
         else
             return null;
+    }
+
+    @Path("notify")
+    @POST
+    @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
+    @Produces(MediaType.TEXT_XML)
+    public LoanStatusNotificationResponse handle(@HeaderParam("X-Mockbank-NotificationEndpoint") String clientEndpoint,
+                                                 @HeaderParam("X-Mockbank-Async") boolean isAsync,
+                                                 LoanStatusNotificationRequest request) throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget = client.target(clientEndpoint);
+        Invocation invocation = webTarget.request().buildPost(Entity.xml(request));
+        if (isAsync) {
+            Future<LoanStatusNotificationResponse> futureResponse = invocation.submit(LoanStatusNotificationResponse.class);
+            return futureResponse.get();
+        }
+        else {
+            return invocation.invoke(LoanStatusNotificationResponse.class);
+        }
     }
 
 //    @POST
@@ -73,17 +93,6 @@ public class GILFranceResource {
         fillCommonResponse(request, response);
         determineChargeResult(request, response);
         return response;
-    }
-
-    private void fillCommonResponse(Request request, Response response) throws DatatypeConfigurationException {
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        response.setTimestamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(utc)));
-        response.setSystemId(request.getSystemId());
-        response.setTransactionId(request.getTransactionId());
-        response.setRequestId(request.getRequestId());
-        response.setMerchantId(request.getMerchantId());
-        response.setMarketplaceId(request.getMarketplaceId());
-        response.setVersion("1");
     }
 
     private void determineApplicationResult(LoanApplicationCreationRequest request, LoanApplicationCreationResponse response) {
