@@ -2,6 +2,7 @@ package app;
 
 import crypto.Cryptor;
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets;
  *     XML Encryption Syntax and Processing</a> standard.
  */
 @Path("xml")
+@Component
 public class XMLEncryptionResource {
     private Cryptor cryptor;
     public XMLEncryptionResource() throws Exception {

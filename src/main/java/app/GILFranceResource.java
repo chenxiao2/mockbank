@@ -1,6 +1,8 @@
 package app;
 
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
@@ -18,6 +20,7 @@ import static app.util.GILFranceUtil.fillCommonResponse;
  * Created by liang on 4/10/2016.
  */
 @Path("gil/fr")
+@Component
 public class GILFranceResource {
 
     @POST
