@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by liang on 4/24/2016.
  */
 
-@ApplicationPath("/client")
+//@ApplicationPath("/client")
 public class ClientApplication extends javax.ws.rs.core.Application {
     private Set<Object> singletons = new HashSet<>();
 

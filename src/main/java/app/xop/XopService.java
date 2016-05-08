@@ -1,12 +1,13 @@
 package app.xop;
 
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
-import org.springframework.stereotype.Component;
+
+import javax.inject.Named;
 
 /**
  * Created by liazhang on 4/29/16.
  */
-@Component
+@Named
 public class XopService implements XopInterface {
     @Override
     public XopData putXop(@XopWithMultipartRelated XopData bean) {

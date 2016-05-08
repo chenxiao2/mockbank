@@ -1,17 +1,11 @@
 package app;
 
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.GregorianCalendar;
 import java.util.concurrent.Future;
 
 import static app.util.GILFranceUtil.fillCommonResponse;
@@ -20,7 +14,7 @@ import static app.util.GILFranceUtil.fillCommonResponse;
  * Created by liang on 4/10/2016.
  */
 @Path("gil/fr")
-@Component
+@Named
 public class GILFranceResource {
 
     @POST

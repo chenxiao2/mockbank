@@ -4,24 +4,36 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
-        <display-name>Archetype Created Web Application</display-name>
+    <display-name>Mockbank</display-name>
 
-        <listener>
-            <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-        </listener>
+    <!-- For Spring -->
+    <!--<listener>-->
+    <!--<listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>-->
+    <!--</listener>-->
 
-        <listener>
-            <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
-        </listener>
+    <!--<listener>-->
+    <!--<listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>-->
+    <!--</listener>-->
 
-        <servlet>
-            <servlet-name>Resteasy</servlet-name>
-            <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-        </servlet>
+    <context-param>
+        <param-name>resteasy.guice.modules</param-name>
+        <param-value>guice.AppModule</param-value>
+    </context-param>
 
-        <servlet-mapping>
-            <servlet-name>Resteasy</servlet-name>
-            <url-pattern>/*</url-pattern>
-        </servlet-mapping>
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 
 </web-app>
