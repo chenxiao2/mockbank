@@ -108,6 +108,13 @@
             <version>0.9.10</version>
         </dependency>
 
+        <!-- http://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -121,6 +128,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.12.3</version>
                 <configuration>
                     <schemaDirectory>src/main/resources/configuration/schemas</schemaDirectory>
                 </configuration>
@@ -196,6 +204,39 @@
                         <goals>
                             <goal>stop</goal>
                         </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>1.1.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <!-- makes jetty log the exception if it fails to initialize slf4j -->
+                                <property>
+                                    <name>org.eclipse.jetty.util.log.IGNORED</name>
+                                    <value>false</value>
+                                </property>
+                                <!-- Location of logback config -->
+                                <property>
+                                    <name>logback.configurationFile</name>
+                                    <value>src/main/resources/logback.xml</value>
+                                </property>
+                            </properties>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

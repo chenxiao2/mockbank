@@ -80,6 +80,9 @@ or open a web browser and visit https://localhost:9090/
 7. [ ] Error handling
 8. [ ] Message validation
 9. [x] Integration testing
+10. [x] Logging
+  - [x] implements ContainerRequestFilter/ContainerResponseFilter to log method, headers, and status code
+  - [x] implements ReaderInteceptor/WriterInterceptor to log http body.
 
 
   

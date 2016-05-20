@@ -1,5 +1,6 @@
 package app;
 
+import app.filter.Logged;
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 
 import javax.inject.Named;
@@ -18,6 +19,7 @@ import static app.util.GILFranceUtil.fillCommonResponse;
 public class GILFranceResource {
 
     @POST
+    @Logged
     @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
     @Produces(MediaType.TEXT_XML)
     public Response handle(Request request) throws Exception {
@@ -35,6 +37,7 @@ public class GILFranceResource {
 
     @Path("notify")
     @POST
+    @Logged
     @Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
     @Produces(MediaType.TEXT_XML)
     public LoanStatusNotificationResponse handle(@HeaderParam("X-Mockbank-NotificationEndpoint") String clientEndpoint,

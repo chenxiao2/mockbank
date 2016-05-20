@@ -1,5 +1,6 @@
 package app;
 
+import app.filter.Logged;
 import crypto.Cryptor;
 import org.apache.commons.io.IOUtils;
 
@@ -28,6 +29,7 @@ public class XMLEncryptionResource {
     }
 
     @POST
+    @Logged
     //@Consumes("application/xml")
     @Path("encrypt")
     public StreamingOutput encrypt(InputStream inputStream) throws Exception {
@@ -44,6 +46,7 @@ public class XMLEncryptionResource {
     }
 
     @POST
+    @Logged
     //@Consumes("application/xml")
     @Path("decrypt")
     public StreamingOutput decrypt(InputStream inputStream) throws Exception {
