@@ -2,6 +2,7 @@ package app;
 
 import app.filter.Logged;
 import crypto.Cryptor;
+import io.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 
 import javax.inject.Named;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
  * Encryption and decryption per <a href="https://www.w3.org/TR/2002/REC-xmlenc-core-20021210/Overview.html">
  *     XML Encryption Syntax and Processing</a> standard.
  */
+@Api
 @Path("xml")
 @Named
 public class XMLEncryptionResource {

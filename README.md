@@ -1,15 +1,20 @@
+## Swagger support
+- This service is integrated with Swagger and has a built-in swagger ui http://credit-mockbank.com/swagger-ui/index.html.
+- The swagger specification is published under http://credit-mockbank.com/swagger.json and http://credit-mockbank.com/swagger.yaml
+- The avaliable interface could be explored by going to the swagger ui and exploring the swagger specification.
+
 ## Avaiable action
-- http://address:8080/xml/encrypt
+- http://credit-mockbank.com/xml/encrypt
   - POST: encrypt a XML document
-- http://address:8080/xml/decrypt
+- http://credit-mockbank.com/xml/decrypt
   - POST: decrypt an encrypted XML document
-- http://address:8080/gil/fr for GIL FR mockbank
+- http://credit-mockbank.com/gil/fr for GIL FR mockbank
   - POST: XML request with Content-Type application/xml or text/xml
-- http://localhost:8080/gil/fr/notify to orchestrate a LoanStatusNotification/CreditLineNotification call
+- http://credit-mockbank.com/gil/fr/notify to orchestrate a LoanStatusNotification/CreditLineNotification call
   - POST: LoanStatusNotificationRequest
   - X-Mockbank-NotificationEndpoint header to set the client URL, for example http://localhost:8080/client/gil/fr
   - X-Mockbank-Async header to set if making the client call asynchronously
-  - http://localhost:8080/client/gil/fr is the endpoint mocking the client of MockBank for notification call.
+  - http://credit-mockbank.com/client/gil/fr is the endpoint mocking the client of MockBank for notification call.
 
 
 
@@ -28,6 +33,12 @@ or
   - run the docker container using the built image `docker run -p 18080:8080 -d <namespace>/<imagename>`
   - then the server will download runtime dependencies and start,
     wait for about one minutes and use `docker logs <container>` to check the status of the server.
+
+## JAX-RS 2.0
+  - This service is written in JAX-RS 2.0
+
+## Guice integration
+  - This service is using Guice for DI and integrated Guice with JAX-RS 2.0.
 
 ## to generate a RSA key pair used for encryption and decryption
 ```bash

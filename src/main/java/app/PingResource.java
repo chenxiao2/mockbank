@@ -1,6 +1,7 @@
 package app;
 
 import app.filter.Logged;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Named;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Slf4j
 @Named
+@Api
 @Path("/")
 public class PingResource {
 

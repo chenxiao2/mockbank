@@ -2,6 +2,7 @@ package app;
 
 import app.filter.Logged;
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
+import io.swagger.annotations.Api;
 
 import javax.inject.Named;
 import javax.ws.rs.*;
@@ -14,6 +15,7 @@ import static app.util.GILFranceUtil.fillCommonResponse;
 /**
  * Created by liang on 4/10/2016.
  */
+@Api
 @Path("gil/fr")
 @Named
 public class GILFranceResource {

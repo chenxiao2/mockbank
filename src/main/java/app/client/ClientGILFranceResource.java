@@ -3,6 +3,7 @@ package app.client;
 
 import app.filter.Logged;
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
+import io.swagger.annotations.Api;
 
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import static app.util.GILFranceUtil.fillCommonResponse;
 
+@Api
 @Path("client/gil/fr")
 @Named
 public class ClientGILFranceResource {
