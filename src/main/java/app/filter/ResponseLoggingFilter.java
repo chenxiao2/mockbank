@@ -6,6 +6,7 @@ import javax.inject.Named;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
  * Created by liazhang on 5/20/16.
  */
 @Slf4j
-@Logged
+//@Logged
 @Named
 @Provider
 public class ResponseLoggingFilter implements ContainerResponseFilter {
