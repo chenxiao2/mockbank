@@ -33,5 +33,8 @@ public class Main {
         System.out.println(certs[0].getType());
         PublicKey pubKey = certs[0].getPublicKey();
         System.out.println("PublicKey: " + pubKey.getAlgorithm() + ":::" + pubKey.getFormat());
+
+        TrustStoreProvider trustStoreProvider = new TrustStoreProvider();
+        KeyStore trustStore = trustStoreProvider.get();
     }
 }

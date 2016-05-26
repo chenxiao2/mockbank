@@ -7,8 +7,10 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.AcceptHeaderApiListingResource;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
+import keystore.TrustStoreProvider;
 
 import javax.inject.Named;
+import java.security.KeyStore;
 
 /**
  * Created by liazhang on 5/8/16.
@@ -23,6 +25,8 @@ public class AppModule extends AbstractModule {
         bind(SwaggerSerializers.class);
 
         bind(Scanner.class).toInstance(provideBeanConfig());
+
+        bind(KeyStore.class).toProvider(TrustStoreProvider.class);
 
         install(new ComponentScanModule("app", Named.class));
     }

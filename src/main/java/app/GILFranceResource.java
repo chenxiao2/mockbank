@@ -1,13 +1,24 @@
 package app;
 
+import app.filter.ClientRequestLoggingFilter;
+import app.filter.ClientResponseLoggingFilter;
 import app.filter.Logged;
+import app.interceptor.RequestLoggingInterceptor;
+import app.interceptor.ResponseLoggingInterceptor;
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 import io.swagger.annotations.Api;
 
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.Future;
 
 import static app.util.GILFranceUtil.fillCommonResponse;
@@ -19,6 +30,9 @@ import static app.util.GILFranceUtil.fillCommonResponse;
 @Path("gil/fr")
 @Named
 public class GILFranceResource {
+
+    @Inject
+    private KeyStore trustStore;
 
     @POST
     @Logged
@@ -45,9 +59,15 @@ public class GILFranceResource {
     public LoanStatusNotificationResponse handle(@HeaderParam("X-Mockbank-NotificationEndpoint") String clientEndpoint,
                                                  @HeaderParam("X-Mockbank-Async") boolean isAsync,
                                                  LoanStatusNotificationRequest request) throws Exception {
-        Client client = ClientBuilder.newClient();
+//        ClientBuilder clientBuilder = ClientBuilder.newBuilder().trustStore(trustStore);
+//        Client client = clientBuilder.newClient();
+        Client client = IgnoreSSLClient();
         WebTarget webTarget = client.target(clientEndpoint);
-        Invocation invocation = webTarget.request().buildPost(Entity.xml(request));
+        webTarget.register(ClientRequestLoggingFilter.class)
+                .register(ClientResponseLoggingFilter.class)
+                .register(ResponseLoggingInterceptor.class)
+                .register(RequestLoggingInterceptor.class);
+        Invocation invocation = webTarget.request().header("Message-Type", "LoanStatusNotificationRequest").buildPost(Entity.xml(request));
         try {
             if (isAsync) {
                 Future<LoanStatusNotificationResponse> futureResponse = invocation.submit(LoanStatusNotificationResponse.class);
@@ -140,5 +160,16 @@ public class GILFranceResource {
         response.setResponseResult(ResponseResultType.ACCEPTED);
         response.setResponseResultCode(0);
         response.setResponseResultDescription("All OK!");
+    }
+
+    public static Client IgnoreSSLClient() throws Exception {
+        SSLContext sslcontext = SSLContext.getInstance("TLS");
+        sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+
+        }}, new java.security.SecureRandom());
+        return ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier((s1, s2) -> true).build();
     }
 }
