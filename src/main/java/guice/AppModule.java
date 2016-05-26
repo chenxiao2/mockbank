@@ -26,7 +26,7 @@ public class AppModule extends AbstractModule {
 
         bind(Scanner.class).toInstance(provideBeanConfig());
 
-        bind(KeyStore.class).toProvider(TrustStoreProvider.class);
+//        bind(KeyStore.class).toProvider(TrustStoreProvider.class);
 
         install(new ComponentScanModule("app", Named.class));
     }

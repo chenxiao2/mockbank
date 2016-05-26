@@ -31,8 +31,8 @@ import static app.util.GILFranceUtil.fillCommonResponse;
 @Named
 public class GILFranceResource {
 
-    @Inject
-    private KeyStore trustStore;
+//    @Inject
+//    private KeyStore trustStore;
 
     @POST
     @Logged
