@@ -5,20 +5,17 @@ import app.filter.ClientResponseLoggingFilter;
 import app.filter.Logged;
 import app.interceptor.RequestLoggingInterceptor;
 import app.interceptor.ResponseLoggingInterceptor;
+import app.util.SSLUtil;
 import com.amazon.payments.globalinstallmentlending.protocol.v1.*;
 import io.swagger.annotations.Api;
 
-import javax.inject.Inject;
 import javax.inject.Named;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.*;
-import javax.ws.rs.client.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.concurrent.Future;
 
 import static app.util.GILFranceUtil.fillCommonResponse;
@@ -61,7 +58,7 @@ public class GILFranceResource {
                                                  LoanStatusNotificationRequest request) throws Exception {
 //        ClientBuilder clientBuilder = ClientBuilder.newBuilder().trustStore(trustStore);
 //        Client client = clientBuilder.newClient();
-        Client client = IgnoreSSLClient();
+        Client client = SSLUtil.IgnoreSSLClient();
         WebTarget webTarget = client.target(clientEndpoint);
         webTarget.register(ClientRequestLoggingFilter.class)
                 .register(ClientResponseLoggingFilter.class)
@@ -162,14 +159,4 @@ public class GILFranceResource {
         response.setResponseResultDescription("All OK!");
     }
 
-    public static Client IgnoreSSLClient() throws Exception {
-        SSLContext sslcontext = SSLContext.getInstance("TLS");
-        sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
-            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-            public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-
-        }}, new java.security.SecureRandom());
-        return ClientBuilder.newBuilder().sslContext(sslcontext).hostnameVerifier((s1, s2) -> true).build();
-    }
 }

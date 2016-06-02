@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<applicationStateChangeResponse
+        xmlns="http://payments.amazon.com/cobrandcreditcard/protocol/v1">
+    <timestamp>2016-06-02T03:48:31.460Z</timestamp>
+    <transactionId>Transaction_ABCD</transactionId>
+    <requestId>ANBKLSDLHKE</requestId>
+    <sourceId>AMAZON</sourceId>
+    <recipientId>NewDay</recipientId>
+    <responseResult>ACCEPTED</responseResult>
+    <responseResultCode>0</responseResultCode>
+    <responseResultDescription>All OK!</responseResultDescription>
+</applicationStateChangeResponse>

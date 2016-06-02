@@ -1,0 +1,250 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:amz="http://payments.amazon.com/cobrandcreditcard/protocol/v1"
+           elementFormDefault="qualified"
+           targetNamespace="http://payments.amazon.com/cobrandcreditcard/protocol/v1"
+           version="1.0.5">
+
+  <xs:complexType name="onlineMessage" abstract="true">
+    <xs:annotation>
+      <xs:documentation>
+        The base type for cobrand credit card request and response messages.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="timestamp" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation> Timestamp of the message processing. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transactionId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            This element contains a transaction ID. The transactionId is
+            unique in a global manner. The transactionId is created by calling party
+            in the request and will identify any transaction.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="requestId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            This element contains a request ID. The requestID is
+            unique in a global manner. The requestID is created by calling party
+            in the request and will identify a request. Request Id will use exponential back off.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+
+      <xs:element name="sourceId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            sourceId identifies to the recipient who is sending the message.
+            For applicationStateChangeRequest it is the partnerId.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+
+      <xs:element name="recipientId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            recipientId identifies who is receiving the message.  Use 'AMZN'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="applicationStateChangeRequest">
+    <xs:annotation>
+      <xs:documentation>
+        applicationStateChange message indicates that there has been a change
+        to the state of the application.  All applications that are submitted
+        by customers should send an application state change message with
+        the appropriate information.
+        
+        The amazonReferenceID(ARI) is a Base64 URL safe encoded UUID.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:onlineMessage">
+          <xs:sequence>
+            <xs:element name="amazonReferenceId" type="xs:string"/>
+            <xs:element name="applicationStatus" type="amz:applicationStatus" />
+            <xs:element name="creditCardDetails" type="amz:creditCardDetails" minOccurs="0" />
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="applicationStateChangeResponse">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="amz:onlineMessage">
+          <xs:group ref="amz:responseFields"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:simpleType name="applicationStatus">
+    <xs:annotation>
+      <xs:documentation>
+        The status of the current application.
+
+        APPROVED_BUY: the customer has been approved for the product by the partner.
+        This message should contain the customer account information that Amazon
+        should add to the customer's Amazon Account.
+
+        APPROVED_NO_BUY: the application is approved, but the customer cannot use 
+        it to make a purchase in Amazon until the card is activated.
+
+        ACTIVATED_BUY: The card is activated after APPROVE_BUY. 
+        
+        ACTIVATED_NO_BUY: The activated state after APPROVE_NO_BUY. 
+
+        PENDING: the customer's application enters the pending state when
+        the partner cannot make an instant decision.
+        
+        DECLINED: the application is declined.
+        
+        DECLINED_BY_CUSTOMER: the customer declines the card offer.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="APPROVED_BUY"/>
+      <xs:enumeration value="APPROVED_NO_BUY"/>
+      <xs:enumeration value="ACTIVATED_BUY"/>
+      <xs:enumeration value="ACTIVATED_NO_BUY"/>
+      <xs:enumeration value="PENDING"/>
+      <xs:enumeration value="DECLINED"/>
+      <xs:enumeration value="DECLINED_BY_CUSTOMER"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="cardType">
+    <xs:annotation>
+      <xs:documentation>
+        The type of card the customer is approved for, which can be 'PLATINUM' or 'CLASSIC'.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CLASSIC"/>
+      <xs:enumeration value="PLATINUM"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="creditCardDetails">
+    <xs:annotation>
+      <xs:documentation>
+        customerInformation provides all the necessary data to for amazon to
+        register the payment instrument so the customer can use it for
+        purchases.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="encryptedCreditCardNumber" type="xs:string"/>
+      <xs:element name="creditCardType" type="amz:cardType">
+        <xs:annotation>
+          <xs:documentation>
+            creditCardType the type of card the customer is approved for, 
+            which can be 'PLATINUM' or 'CLASSIC'.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="expirationDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+            experiationDate the expiration date of the new account.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="cardHolderName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            cardHolderName is the name of the card holder as it appears on the credit card.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="billingAddress" type="amz:address">
+        <xs:annotation>
+          <xs:documentation>
+            billingAddress the billing address of the card holder.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="emailAddress" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            emailAddress the email address of the card holder.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="partnerReferenceId" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            partnerReferenceId a unique identifier of the new account (customer account and card).
+            This must be used in all subsequent messages to Amazon in place of
+            the actual accountNumber for security reasons.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="addressLine1" type="xs:string" />
+      <xs:element name="addressLine2" type="xs:string" minOccurs="0"/>
+      <xs:element name="cityOrTown" type="xs:string" />
+      <xs:element name="county" type="xs:string" minOccurs="0"/>
+      <xs:element name="postcode" type="xs:string" />
+      <xs:element name="countryCode" type="xs:string" minOccurs="0"/>
+      <xs:element name="phoneNumber" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="responseResult">
+    <xs:annotation>
+      <xs:documentation>
+        ACCEPTED: The request is accepted.
+        PROCESSING_ERROR: Some error happened when processing the request.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ACCEPTED"/>
+      <xs:enumeration value="PROCESSING_ERROR"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:group name="responseFields">
+    <xs:sequence>
+      <xs:element name="responseResult" type="amz:responseResult">
+        <xs:annotation>
+          <xs:documentation>
+            String enumeration indicating coarse-grain response result
+            ACCEPTED, REJECTED, PENDING or PROCESSING_ERROR.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="responseResultCode" type="xs:int" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional numeric code indicating fine-grain result.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="responseResultDescription" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Optional free-form, human-readable string explaining the
+            result.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>

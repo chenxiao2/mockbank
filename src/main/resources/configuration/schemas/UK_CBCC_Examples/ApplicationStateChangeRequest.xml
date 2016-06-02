@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<applicationStateChangeRequest
+                               xmlns="http://payments.amazon.com/cobrandcreditcard/protocol/v1"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xsi:schemaLocation="http://payments.amazon.com/cobrandcreditcard/protocol/v1 ../UK-CBCC-online.xsd">
+    <timestamp>2015-07-01T00:30:11.234</timestamp>
+    <transactionId>Transaction_ABCD</transactionId>
+    <requestId>ANBKLSDLHKE</requestId>
+    <sourceId>NewDay</sourceId>
+    <recipientId>AMAZON</recipientId>
+    <amazonReferenceId>amzn1.iws1.credit.A86hp8t8SQK3Q-pqqwNYuQ</amazonReferenceId>
+    <applicationStatus>APPROVED_BUY</applicationStatus>
+    <creditCardDetails>
+        <encryptedCreditCardNumber>ENCREPTION_BLOB</encryptedCreditCardNumber>
+        <creditCardType>CLASSIC</creditCardType>
+        <expirationDate>2016-04-01</expirationDate>
+        <cardHolderName>Sherlock Holmes</cardHolderName>
+        <billingAddress>
+            <addressLine1>221B Baker Street</addressLine1>
+            <addressLine2></addressLine2>
+            <cityOrTown>London </cityOrTown>
+            <postcode>NW1 6XE</postcode>
+            <countryCode>UK</countryCode>
+            <phoneNumber>+44 20 7224 3688</phoneNumber>
+        </billingAddress>
+        <emailAddress>Sherlock.Holmes@co.uk</emailAddress>
+        <partnerReferenceId>FDJSLKFJLKDSJFKDSJ</partnerReferenceId>
+    </creditCardDetails>
+</applicationStateChangeRequest>
